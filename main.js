@@ -4,37 +4,38 @@ let shopItemsData = [{
     id: "kjkkjj",
     name: "Casual Shirt",
     price: 45,
-    decs: "Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
+    desc: "Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
     img: "images/img-1.jpg"
 },
 {
     id: "djfsondj",
     name: "Office Shirt",
     price: 80,
-    decs: "Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
+    desc: "Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
     img: "images/img-2.jpg"
 },
 {
     id: "bfieb",
     name: "T-shirt",
     price: 25,
-    decs: "Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
+    desc: "Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
     img: "images/img-3.jpg"
 },
 {
     id: "kieanfjnj",
     name: "Suit",
     price: 300,
-    decs: "Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
+    desc: "Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
     img: "images/img-4.jpg"
 }];
 
-let basket = [];
+let basket = JSON.parse(localStorage.getItem("data")) || [];
 
 let generateShop = () => {
     return (shop.innerHTML = shopItemsData
         .map((x) => {
-            let {id, name, price, desc, img} = x
+            let {id, name, price, desc, img} = x;
+            let search = basket.find((x) => x.id === id) || [];
         return `
         <div id="product-id-${id}" class="item">
             <img width="220" src="${img}" alt="">
@@ -45,7 +46,7 @@ let generateShop = () => {
                 <h2>$ ${price}</h2>
                 <div class="buttons">
                   <i onclick="decrement(${id})" class="bi bi-dash-lg"></i>
-                  <div id=${id} class="quantity">0</div>
+                  <div id=${id} class="quantity">${search.item === undefined ? 0 : search.item}</div>
                   <i onclick="increment(${id})" class="bi bi-plus-lg"></i>
                 </div>
               </div>
@@ -71,8 +72,9 @@ let increment = (id) => {
     } else {
         search.item += 1;
     }
-
-    console.log(basket);
+    localStorage.setItem("data", JSON.stringify(basket));
+    // console.log(basket);
+    update(selectedItem.id);
 }; 
 
 let decrement = (id) => {
@@ -84,7 +86,21 @@ let decrement = (id) => {
         search.item -= 1;
     }
 
-    console.log(basket);
+    localStorage.setItem("data", JSON.stringify(basket));
+
+    // console.log(basket);
+    update(selectedItem.id);
 };
 
-let update = () => {};
+let update = (id) => {
+    let search = basket.find((x) => x.id === id);
+    // console.log(search.item);
+    document.getElementById(id).innerHTML = search.item;
+    calculation();
+};
+
+let calculation = () => {
+    let cartIcon = document.getElementById("cart-amount");
+    cartIcon.innerHTML = basket.map((x)=>x.item).reduce((x, y) => x+y, 0);
+
+}
